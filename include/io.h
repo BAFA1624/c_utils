@@ -9,7 +9,7 @@
 char * get_n_char( char ** const buf, size_t * const restrict n,
                    FILE * const  stream );
 
-char * get_delim_char( char ** const buf, const char * const restrict delim,
-                       FILE *        stream );
+char * get_delim_char( char ** const buf, size_t * const restrict n,
+                       const char * const restrict delim, FILE * stream );
 
 #endif

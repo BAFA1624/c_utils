@@ -36,6 +36,19 @@ get_n_char( char ** const buf, size_t * const restrict n,
         tmp[pos++] = getc( stream );
     }
 
+    // Return number of chars read in.
+    *n = pos;
+
+    // pos + 1 = size of buffer required to store read-in data.
+    if ( pos + 1 < allocated_memory ) {
+        tmp = ( char * ) realloc( ( void * ) tmp, pos + 1 );
+        if ( !tmp ) {
+            perror( "realloc" );
+            exit( EXIT_FAILURE );
+        }
+        tmp[pos] = '\0';
+    }
+
     // Check if EOF or error indicators are set
     if ( !!feof( stream ) ) {
         pos--;
@@ -45,26 +58,52 @@ get_n_char( char ** const buf, size_t * const restrict n,
     }
     clearerr( stream );
 
-    // Return number of chars read in.
-    *n = pos;
-
-    // pos + 1 = size of buffer required to store read-in data.
-    if ( pos + 1 < allocated_memory ) {
-        tmp = ( char * ) realloc( ( void * ) tmp, pos + 1 );
-        tmp[pos] = '\0';
-    }
-
     return tmp;
 }
 
-/*char *
-get_delim_char( char ** const buf, const char * const restrict delim,
-                FILE * const  stream ) {
+char *
+get_delim_char( char ** const buf, size_t * const restrict n,
+                const char * const restrict delim, FILE * const stream ) {
     char * tmp;
+    size_t allocated_memory;
     if ( !buf ) {
-        tmp = ( char * ) malloc( max_buffer_alloc );
+        allocated_memory = _min_( n, &max_buffer_alloc );
+        tmp = ( char * ) malloc( allocated_memory );
     }
     else {
         tmp = *buf;
+        allocated_memory = *n;
     }
-}*/
+
+    size_t pos = 0;
+    while ( pos < allocated_memory - 1 && !feof( stream )
+            && !ferror( stream ) ) {
+        tmp[pos] = getc( stream );
+        if ( tmp[pos] == *delim ) {
+            break;
+        }
+        pos++;
+    }
+
+    *n = pos;
+
+    if ( pos + 1 < allocated_memory ) {
+        tmp = ( char * ) realloc( tmp, pos + 1 );
+        if ( !tmp ) {
+            perror( "realloc" );
+            exit( EXIT_FAILURE );
+        }
+    }
+    tmp[pos] = '\0';
+
+    // Check if EOF or error indicators are set
+    if ( !!feof( stream ) ) {
+        pos--;
+    }
+    if ( !!ferror( stream ) ) {
+        perror( "getc" );
+    }
+    clearerr( stream );
+
+    return tmp;
+}
