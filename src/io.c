@@ -12,33 +12,47 @@ get_n_char( char ** const buf, size_t * const restrict n,
             FILE * const  stream ) {
     // If *buf == NULL, allocate memory.
     char * tmp;
+    size_t allocated_memory = 0;
     if ( !buf ) {
-        tmp = ( char * ) malloc( _min_( n, &max_buffer_alloc ) );
+        allocated_memory = _min_( n, &max_buffer_alloc );
+        tmp = ( char * ) malloc( allocated_memory );
         if ( !( tmp ) ) {
-            printf( "Failed to allocate memory for buffer.\n" );
-            exit( -1 );
+            perror( "malloc" );
+            exit( EXIT_FAILURE );
         }
     }
     else {
+        allocated_memory = *n;
         tmp = *buf;
     }
 
     // Begin reading n - 1 chars into buffer.
-
-    if ( !buf ) {
-        tmp[_min_( n, &max_buffer_alloc ) - 1] = '\0';
-    }
-    else {
-        tmp[*n - 1] = '\0';
-    }
+    tmp[allocated_memory - 1] = '\0';
 
     size_t pos = 0;
-    while ( feof( stream ) == 0
-            && pos < ( ( !buf ) ? _min_( n, &max_buffer_alloc ) : *n ) - 1 ) {
-        tmp[pos++] = getchar();
+    while ( !feof( stream ) && !ferror( stream )
+            && pos < allocated_memory - 1 ) {
+        // printf( "%ld: Retrieving char.\n", pos );
+        tmp[pos++] = getc( stream );
     }
 
+    // Check if EOF or error indicators are set
+    if ( !!feof( stream ) ) {
+        pos--;
+    }
+    if ( !!ferror( stream ) ) {
+        perror( "getc" );
+    }
+    clearerr( stream );
+
+    // Return number of chars read in.
     *n = pos;
+
+    // pos + 1 = size of buffer required to store read-in data.
+    if ( pos + 1 < allocated_memory ) {
+        tmp = ( char * ) realloc( ( void * ) tmp, pos + 1 );
+        tmp[pos] = '\0';
+    }
 
     return tmp;
 }
@@ -48,10 +62,9 @@ get_delim_char( char ** const buf, const char * const restrict delim,
                 FILE * const  stream ) {
     char * tmp;
     if ( !buf ) {
-        tmp = ( char * ) malloc();
+        tmp = ( char * ) malloc( max_buffer_alloc );
     }
     else {
         tmp = *buf;
     }
 }*/
-
