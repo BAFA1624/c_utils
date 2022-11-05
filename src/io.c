@@ -32,8 +32,6 @@ get_n_char( char ** const buf, size_t * const restrict n,
         tmp[*n - 1] = '\0';
     }
 
-    printf( "%ld\n", ( ( !buf ) ? _min_( n, &max_buffer_alloc ) : *n ) - 1 );
-
     size_t pos = 0;
     while ( feof( stream ) == 0
             && pos < ( ( !buf ) ? _min_( n, &max_buffer_alloc ) : *n ) - 1 ) {
