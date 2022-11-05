@@ -8,8 +8,8 @@ _min_( const size_t * const lhs, const size_t * const rhs ) {
 }
 
 char *
-get_n_char( char ** const restrict buf, size_t * const restrict n,
-            FILE * const restrict stream ) {
+get_n_char( char ** const buf, size_t * const restrict n,
+            FILE * const  stream ) {
     // If *buf == NULL, allocate memory.
     char * tmp;
     if ( !buf ) {
@@ -46,11 +46,14 @@ get_n_char( char ** const restrict buf, size_t * const restrict n,
 }
 
 /*char *
-get_delim_char( char ** const restrict buf, const char * const restrict delim,
-                FILE * const stream ) {
+get_delim_char( char ** const buf, const char * const restrict delim,
+                FILE * const  stream ) {
     char * tmp;
     if ( !buf ) {
-        tmp = ( char * ) malloc(
+        tmp = ( char * ) malloc();
+    }
+    else {
+        tmp = *buf;
     }
 }*/
 

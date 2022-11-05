@@ -6,11 +6,10 @@
 
 #define MAX_IO_BUFFER_SIZE 1024
 
-char * get_n_char( char ** const restrict buf, size_t * const restrict n,
-                   FILE * const restrict stream );
+char * get_n_char( char ** const buf, size_t * const restrict n,
+                   FILE * const  stream );
 
-char * get_delim_char( char ** const restrict buf,
-                       const char * const restrict delim,
-                       FILE * restrict stream );
+char * get_delim_char( char ** const buf, const char * const restrict delim,
+                       FILE *        stream );
 
 #endif
