@@ -107,3 +107,24 @@ get_delim_char( char ** const buf, size_t * const restrict n,
 
     return tmp;
 }
+
+// Returns 0 for invalid input.
+// TODO: implement string functions for this.
+int
+valid_input( char ** const restrict response_buf, size_t input_buffer_size,
+             const char * const valid_chars ) {
+    // Get input
+    char delim = '\n';
+    get_delim_char( response_buf, &input_buffer_size, &delim, stdin );
+
+    for ( char * c_input = response_buf[0]; *c_input != '\0'; c_input++ ) {
+        for ( const char * c_valid = valid_chars; *c_valid != '\0';
+              c_valid++ ) {
+            if ( *c_input == *c_valid ) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
