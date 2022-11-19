@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Debug & release flags
-set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra -pedantic -Werror -O0 -g -ggdb -fsanitize=address -fno-omit-frame-pointer")
+set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra -pedantic -Werror -O0 -g -ggdb -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS_RELEASE "-Wall -Wextra -pedantic -Werror -O3")
 
 # set locations to build static & shared libraries
@@ -27,4 +27,4 @@ add_subdirectory(src)
 include_directories(include)
 
 add_executable(main src/main.c)
-target_link_libraries(main PUBLIC io)
+target_link_libraries(main PUBLIC io str)
