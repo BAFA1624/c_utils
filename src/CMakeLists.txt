@@ -1,2 +1,6 @@
 add_library(io io.c)
 target_include_directories(io PUBLIC "${PROJECT_SOURCE_DIR}/include")
+add_library(str str.c)
+target_include_directories(str PUBLIC "${PROJECT_SOURCE_DIR}/include")
+add_library(algorithm algorithm.c)
+target_include_directories(algorithm PUBLIC "${PROJECT_SOURCE_DIR}/include")
