@@ -3,26 +3,38 @@
 
 #include <assert.h>
 
+void
+print_cf( const complex_f c ) {
+    printf( "%f + %fi\n", crealf( c ), cimagf( c ) );
+}
+void
+print_clf( const complex_lf c ) {
+    printf( "%f + %fi\n", crealf( c ), cimagf( c ) );
+}
+void
+print_cllf( const complex_llf c ) {
+    printf( "%f + %fi\n", crealf( c ), cimagf( c ) );
+}
+
 int
 main() {
     size_t n = 60;
 
-    float * test_f  = linspace( ( float ) -5.5, ( float ) 4.5, n );
-    double * test_d = linspace( ( double ) 5.5, ( double ) -4.5, n );
-    long double * test_ld =
-        linspace( ( long double ) -5.5, ( long double ) 4.5, n );
+    complex_f a = 5.5 + I * -4.5;
+    complex_f b = -4.5 + I * 5.5;
 
-    puts( "Float linspace:" );
-    for ( size_t i = 0; i < n; ++i ) { printf( "%f  ", test_f[i] ); }
-    puts( "\n\nDouble linspace:" );
-    for ( size_t i = 0; i < n; ++i ) { printf( "%lf  ", test_d[i] ); }
-    puts( "\n\nLong double linspace:" );
-    for ( size_t i = 0; i < n; ++i ) { printf( "%Lf  ", test_ld[i] ); }
-    puts( "\n" );
+    printf( "a: " );
+    print_cf( a );
+    printf( "b: " );
+    print_cf( b );
 
-    free( test_f );
-    free( test_d );
-    free( test_ld );
+    complex_f * test_cf = linspace_cf( a, b, n );
+
+    puts( "complex_f:" );
+    for ( size_t i = 0; i < n; ++i ) { print_cf( test_cf[i] ); }
+    puts( "" );
+
+    free( test_cf );
 
     return 0;
 }
