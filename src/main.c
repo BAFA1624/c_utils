@@ -20,18 +20,10 @@ int
 main() {
     size_t n = 60;
 
-    complex_f a = 5.5 + I * -4.5;
-    complex_f b = -4.5 + I * 5.5;
-
-    printf( "a: " );
-    print_cf( a );
-    printf( "b: " );
-    print_cf( b );
-
-    complex_f * test_cf = linspace_cf( a, b, n );
+    float * test_cf = linspace_f( -5.5, 5.5, n, true );
 
     puts( "complex_f:" );
-    for ( size_t i = 0; i < n; ++i ) { print_cf( test_cf[i] ); }
+    for ( size_t i = 0; i < n; ++i ) { printf( "%f\n", test_cf[i] ); }
     puts( "" );
 
     free( test_cf );
