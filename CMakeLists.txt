@@ -26,5 +26,6 @@ add_subdirectory(src)
 
 include_directories(include)
 
+# Create executable & link relevant libs
 add_executable(main src/main.c)
 target_link_libraries(main PUBLIC io str algorithm ranges common_math)
