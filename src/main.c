@@ -29,7 +29,7 @@ main() {
     printf( "test_f[0] = %p, test_f[%ld] = %p\n", ( void * ) test_f, n,
             ( void * ) ( test_f + n ) );
 
-    range_t range = get_range( ( void * ) test_f, n, sizeof( test_f[0] ) );
+    rrange_t range = get_rrange( ( void * ) test_f, n, sizeof( test_f[0] ) );
 
     printf( "begin = %p, end = %p\n", range.begin, range.end );
 
