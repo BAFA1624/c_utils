@@ -1,5 +1,7 @@
 #include "algorithm.h"
+#include "common_math.h"
 #include "io.h"
+#include "ranges.h"
 
 #include <assert.h>
 
@@ -31,9 +33,8 @@ main() {
 
     printf( "begin = %p, end = %p\n", range.begin, range.end );
 
-    for ( char * ptr = range.begin; ptr != range.end; ptr +=
-                                                      range.element_size ) {
-        printf( "%f\n", ( float ) *ptr );
+    for ( size_t i = 0; i < n; ++i ) {
+        printf( "%f\n", *( float * ) access_range( range, i ) );
     }
 
     free( test_f );
