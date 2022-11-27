@@ -2,6 +2,7 @@
 #define ALGORITHM_H
 
 #include "linspace.h"
+#include "transform.h"
 #include "utility_macros.h"
 
 #include <complex.h> // _Complex

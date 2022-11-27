@@ -18,6 +18,13 @@ print_cllf( const complex_llf c ) {
     printf( "%f + %fi\n", crealf( c ), cimagf( c ) );
 }
 
+void
+square( const void ** f, void ** dst ) {
+    // *dst is mem location of storage
+    float * destination = ( float * ) ( *dst );
+    *destination = *( float * ) ( *f ) * *( float * ) ( *f );
+}
+
 int
 main() {
     size_t n = 5;
@@ -26,18 +33,23 @@ main() {
 
     for ( size_t i = 0; i < n; ++i ) { printf( "%f\n", test_f[i] ); }
 
-    printf( "test_f[0] = %p, test_f[%ld] = %p\n", ( void * ) test_f, n,
-            ( void * ) ( test_f + n ) );
 
     rrange_t range = get_rrange( ( void * ) test_f, n, sizeof( test_f[0] ) );
 
-    printf( "begin = %p, end = %p\n", range.begin, range.end );
+    putchar( '\n' );
 
     for ( size_t i = 0; i < n; ++i ) {
         printf( "%f\n", *( float * ) at( range, i ) );
     }
 
+    putchar( '\n' );
+
+    float * transformed_range = transform( range, square );
+
+    for ( size_t i = 0; i < n; ++i ) { printf( "%f\n", transformed_range[i] ); }
+
     free( test_f );
+    free( transformed_range );
 
     return 0;
 }
