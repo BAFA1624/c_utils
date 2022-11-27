@@ -1,27 +1,27 @@
 #include "ranges.h"
 
-#define CHECK_FORWARD_ITER( range ) \
-    ( intptr_t )( range.cbegin ) < ( intptr_t ) ( range.cend )
+#define CHECK_FORWARD_ITER( range_ptr ) \
+    ( intptr_t )( range_ptr->cbegin ) < ( intptr_t ) ( range_ptr->cend )
 
 // Forward/Reverse iteration invariant increment/decrement
 #define INCR( range, pos )                                              \
-    CHECK_FORWARD_ITER( ( range ) ) ?                                   \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
         ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) ) : \
-        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.element_size ) )
+        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.nelement_size ) )
 
 #define INCR_N( range, pos, n )                           \
-    CHECK_FORWARD_ITER( ( range ) ) ?                     \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
         ( void * ) ( ( uintptr_t ) ( pos )                \
                      + ( n ) * ( range.element_size ) ) : \
         ( void * ) ( ( uintptr_t ) ( pos ) - ( n ) * ( range.element_size ) )
 
 #define DECR( range, pos )                                              \
-    CHECK_FORWARD_ITER( ( range ) ) ?                                   \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
         ( void * ) ( ( uintptr_t ) ( pos ) - ( range.element_size ) ) : \
         ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) )
 
 #define DECR_N( range, pos, n )                           \
-    CHECK_FORWARD_ITER( ( range ) ) ?                     \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
         ( void * ) ( ( uintptr_t ) ( pos )                \
                      - ( n ) * ( range.element_size ) ) : \
         ( void * ) ( ( uintptr_t ) ( pos ) + ( n ) * ( range.element_size ) )
@@ -79,42 +79,42 @@ get_const_rrange( const void * const arr, const size_t size,
 
 
 void *
-access_range( range_t r, const size_t i ) {
-    const uintptr_t left = CHECK_FORWARD_ITER( r ) ?
-                               ( const uintptr_t ) r.cbegin :
-                               ( const uintptr_t ) r.cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r ) ?
-                                ( const uintptr_t ) r.cend :
-                                ( const uintptr_t ) r.cbegin;
+at_range( range_t * r_ptr, const size_t i ) {
+    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
+                               ( const uintptr_t ) r_ptr->cbegin :
+                               ( const uintptr_t ) r_ptr->cend;
+    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
+                                ( const uintptr_t ) r_ptr->cend :
+                                ( const uintptr_t ) r_ptr->cbegin;
     assert( left + i < right );
 
-    return INCR_N( r, r.cbegin, i );
+    return INCR_N( ( *r_ptr ), ( *r_ptr ).cbegin, i );
 }
 
 void *
-const_access_range( const range_t r, const size_t i ) {
-    const uintptr_t left = CHECK_FORWARD_ITER( r ) ?
-                               ( const uintptr_t ) r.cbegin :
-                               ( const uintptr_t ) r.cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r ) ?
-                                ( const uintptr_t ) r.cend :
-                                ( const uintptr_t ) r.cbegin;
+const_at_range( const range_t * r_ptr, const size_t i ) {
+    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
+                               ( const uintptr_t ) r_ptr->cbegin :
+                               ( const uintptr_t ) r_ptr->cend;
+    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
+                                ( const uintptr_t ) r_ptr->cend :
+                                ( const uintptr_t ) r_ptr->cbegin;
     assert( left + i < right );
 
-    return INCR_N( r, r.cbegin, i );
+    return INCR_N( ( *r_ptr ), r_ptr->cbegin, i );
 }
 
 void *
-access_const_range( const const_range_t r, const size_t i ) {
+at_const_range( const const_range_t * r_ptr, const size_t i ) {
     // Bounds check
-    const uintptr_t left = CHECK_FORWARD_ITER( r ) ?
-                               ( const uintptr_t ) r.cbegin :
-                               ( const uintptr_t ) r.cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r ) ?
-                                ( const uintptr_t ) r.cend :
-                                ( const uintptr_t ) r.cbegin;
+    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
+                               ( const uintptr_t ) r_ptr->cbegin :
+                               ( const uintptr_t ) r_ptr->cend;
+    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
+                                ( const uintptr_t ) r_ptr->cend :
+                                ( const uintptr_t ) r_ptr->cbegin;
     assert( left + i < right );
 
-    return INCR_N( r, r.cbegin, i );
+    return INCR_N( ( *r_ptr ), r_ptr->cbegin, i );
 }
 

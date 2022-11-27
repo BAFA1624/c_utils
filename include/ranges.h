@@ -45,10 +45,21 @@ const_rrange_t get_const_rrange( const void * const arr, const size_t size,
                                  const size_t element_size );
 
 
-void * access_range( range_t r, const size_t i );
+void * at_range( range_t * r, const size_t i );
 
-void * const_access_range( const range_t r, const size_t i );
+void * const_at_range( const range_t * r, const size_t i );
 
-void * access_const_range( const const_range_t r, const size_t i );
+void * at_const_range( const const_range_t * r, const size_t i );
+
+// clang-format off
+#define at_ptr( range_ptr, idx )\
+    _Generic( ( range_ptr ),\
+            range_t * : at_range,\
+            const range_t * : const_at_range,\
+            const_range_t * : at_const_range )\
+    ( ( range_ptr ), ( idx ) )
+// clang-format on
+
+#define at( range, idx ) at_ptr( &range, idx )
 
 #endif // RANGES_H
