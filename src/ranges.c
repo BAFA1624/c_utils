@@ -1,31 +1,5 @@
 #include "ranges.h"
 
-#define CHECK_FORWARD_ITER( range_ptr ) \
-    ( intptr_t )( range_ptr->cbegin ) < ( intptr_t ) ( range_ptr->cend )
-
-// Forward/Reverse iteration invariant increment/decrement
-#define INCR( range, pos )                                              \
-    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
-        ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) ) : \
-        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.nelement_size ) )
-
-#define INCR_N( range, pos, n )                           \
-    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
-        ( void * ) ( ( uintptr_t ) ( pos )                \
-                     + ( n ) * ( range.element_size ) ) : \
-        ( void * ) ( ( uintptr_t ) ( pos ) - ( n ) * ( range.element_size ) )
-
-#define DECR( range, pos )                                              \
-    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
-        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.element_size ) ) : \
-        ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) )
-
-#define DECR_N( range, pos, n )                           \
-    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
-        ( void * ) ( ( uintptr_t ) ( pos )                \
-                     - ( n ) * ( range.element_size ) ) : \
-        ( void * ) ( ( uintptr_t ) ( pos ) + ( n ) * ( range.element_size ) )
-
 range_t
 get_range( void * const arr, const size_t size, const size_t element_size ) {
     const range_t range = {

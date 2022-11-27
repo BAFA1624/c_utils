@@ -31,6 +31,54 @@ struct CONST_RANGE_T
     const size_t       element_size;
 };
 
+#define CHECK_FORWARD_ITER( range_ptr ) \
+    ( intptr_t )( range_ptr->cbegin ) < ( intptr_t ) ( range_ptr->cend )
+
+// Get size of range
+#define RANGE_SIZE( range )                             \
+    ( CHECK_FORWARD_ITER( ( &range ) ) ?                \
+          ( size_t ) ( ( uintptr_t ) range.cend         \
+                       - ( uintptr_t ) range.cbegin ) : \
+          ( size_t ) ( ( uintptr_t ) range.cbegin       \
+                       - ( uintptr_t ) range.cend ) )   \
+        / range.element_size
+
+// Retrieve front element in raw array
+#define FRONT( range )                 \
+    CHECK_FORWARD_ITER( ( &range ) ) ? \
+        range.cbegin :                 \
+        ( void * ) ( ( uintptr_t ) range.cend + range.element_size )
+
+// Retrieve one past the end of the raw array
+#define BACK( range )                                                  \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                                 \
+        ( void * ) ( ( uintptr_t ) range.cend - range.element_size ) : \
+        ( void * ) ( ( uintptr_t ) range.cbegin + range.element_size )
+
+// Forward/Reverse iteration invariant increment/decrement
+#define INCR( range, pos )                                              \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
+        ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) ) : \
+        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.element_size ) )
+
+#define INCR_N( range, pos, n )                           \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
+        ( void * ) ( ( uintptr_t ) ( pos )                \
+                     + ( n ) * ( range.element_size ) ) : \
+        ( void * ) ( ( uintptr_t ) ( pos ) - ( n ) * ( range.element_size ) )
+
+#define DECR( range, pos )                                              \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                                  \
+        ( void * ) ( ( uintptr_t ) ( pos ) - ( range.element_size ) ) : \
+        ( void * ) ( ( uintptr_t ) ( pos ) + ( range.element_size ) )
+
+#define DECR_N( range, pos, n )                           \
+    CHECK_FORWARD_ITER( ( &range ) ) ?                    \
+        ( void * ) ( ( uintptr_t ) ( pos )                \
+                     - ( n ) * ( range.element_size ) ) : \
+        ( void * ) ( ( uintptr_t ) ( pos ) + ( n ) * ( range.element_size ) )
+
+
 
 range_t get_range( void * const arr, const size_t size,
                    const size_t element_size );
