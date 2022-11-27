@@ -34,7 +34,7 @@ main() {
     printf( "begin = %p, end = %p\n", range.begin, range.end );
 
     for ( size_t i = 0; i < n; ++i ) {
-        printf( "%f\n", *( float * ) access_range( range, i ) );
+        printf( "%f\n", *( float * ) at( range, i ) );
     }
 
     free( test_f );
