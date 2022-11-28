@@ -9,36 +9,28 @@
 
 typedef void ( *transform_func )( const void **, void ** );
 
-struct TRANSFORM_RANGE_T;
-typedef struct TRANSFORM_RANGE_T tr_range_t;
 
-struct TRANSFORM_RANGE_T
-{
-    const_range_t    range;
-    size_t           n_transforms;
-    size_t           capacity;
-    transform_func * transforms;
-};
+typedef range_t tr_range_t;
 
-tr_range_t get_tr_range( const void * const arr, const size_t, const size_t );
-void       free_tr_range( tr_range_t * tr );
+tr_range_t get_tr_range( void * const arr, const size_t, const size_t );
 
 void apply_transform( void *, const size_t, transform_func );
 
-void *     transform_range( const range_t, transform_func );
-void *     transform_const_range( const const_range_t, transform_func );
-void *     transform_arr( const void * const, const size_t, const size_t,
-                          transform_func );
-tr_range_t transform_tr_range( tr_range_t, transform_func );
+void *     transform_range( const range_t, transform_func, const size_t );
+void *     transform_const_range( const const_range_t, transform_func,
+                                  const size_t );
+tr_range_t transform_arr( void * const, const size_t, const size_t,
+                          transform_func, const size_t );
+tr_range_t transform_tr_range( tr_range_t, transform_func, const size_t );
 
 // clang-format off
-#define transform( data, func )\
+#define transform( data, func, new_element_size )\
     _Generic( (data),\
             range_t: transform_range,\
             const_range_t: transform_const_range,\
             tr_range_t *: transform_tr_range,\
             void*: transform_arr )\
-    ( ( data ), ( func ) )
+    ( ( data ), ( func ), ( new_element_size) )
 
 // clang-format on
 

@@ -50,9 +50,9 @@ struct CONST_RANGE_T
         ( void * ) ( ( uintptr_t ) range.cend + range.element_size )
 
 // Retrieve one past the end of the raw array
-#define BACK( range )                                                  \
-    CHECK_FORWARD_ITER( ( &range ) ) ?                                 \
-        ( void * ) ( ( uintptr_t ) range.cend - range.element_size ) : \
+#define BACK( range )                             \
+    CHECK_FORWARD_ITER( ( &range ) ) ?            \
+        ( void * ) ( ( uintptr_t ) range.cend ) : \
         ( void * ) ( ( uintptr_t ) range.cbegin + range.element_size )
 
 // Forward/Reverse iteration invariant increment/decrement
@@ -106,8 +106,10 @@ void * at_const_range( const const_range_t * r, const size_t i );
             const range_t * : const_at_range,\
             const_range_t * : at_const_range )\
     ( ( range_ptr ), ( idx ) )
+
 // clang-format on
 
 #define at( range, idx ) at_ptr( &range, idx )
+
 
 #endif // RANGES_H

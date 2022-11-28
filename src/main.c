@@ -25,6 +25,13 @@ square( const void ** f, void ** dst ) {
     *destination = *( float * ) ( *f ) * *( float * ) ( *f );
 }
 
+void
+print( const void ** f, void ** dst ) {
+    char * buf = ( char * ) malloc( 10 );
+    snprintf( buf, 10, "%g\n", *( float * ) ( *f ) );
+    *( char ** ) ( *dst ) = ( void * ) buf;
+}
+
 int
 main() {
     size_t n = 5;
@@ -44,9 +51,20 @@ main() {
 
     putchar( '\n' );
 
-    float * transformed_range = transform( range, square );
+    char ** transformed_range = transform( range, print, sizeof( char * ) );
 
-    for ( size_t i = 0; i < n; ++i ) { printf( "%f\n", transformed_range[i] ); }
+    for ( size_t i = 0; i < n; ++i ) {
+        printf( "%s", ( char * ) transformed_range[i] );
+    }
+
+    putchar( '\n' );
+
+    tr_range_t tr = transform_arr( ( void * ) test_f, n, sizeof( float ),
+                                   square, sizeof( float ) );
+
+    for ( size_t i = 0; i < n; ++i ) {
+        printf( "%f\n", *( float * ) at( tr, i ) );
+    }
 
     free( test_f );
     free( transformed_range );

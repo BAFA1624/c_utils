@@ -1,30 +1,17 @@
 #include "transform.h"
 
 tr_range_t
-get_tr_range( const void * const arr, const size_t n_elements,
+get_tr_range( void * const arr, const size_t n_elements,
               const size_t element_size ) {
-    const_range_t range = get_const_range( arr, n_elements, element_size );
-    tr_range_t    tr = {
-           .range = range,
-           .n_transforms = 0,
-           .capacity = 10,
-           .transforms =
-            ( transform_func * ) malloc( sizeof( transform_func ) * 10 ),
-    };
+    tr_range_t tr = get_range( arr, n_elements, element_size );
     return tr;
 }
 
-void
-free_tr_range( tr_range_t * tr ) {
-    free( tr->transforms );
-    tr->capacity = 0;
-    tr->n_transforms = 0;
-}
-
 void *
-transform_range( const range_t r, transform_func f ) {
+transform_range( const range_t r, transform_func f,
+                 const size_t new_element_size ) {
     const size_t n = RANGE_SIZE( r );
-    void *       transformed_arr = malloc( r.element_size * n );
+    void *       transformed_arr = malloc( new_element_size * n );
     if ( !transformed_arr ) {
         perror( "malloc" );
         exit( -1 );
@@ -37,61 +24,58 @@ transform_range( const range_t r, transform_func f ) {
     while ( rl_ptr != rr_ptr ) {
         f( &rl_ptr, &t_ptr );
         rl_ptr = ( void * ) ( ( uintptr_t ) rl_ptr + r.element_size );
-        t_ptr = ( void * ) ( ( uintptr_t ) t_ptr + r.element_size );
+        t_ptr = ( void * ) ( ( uintptr_t ) t_ptr + new_element_size );
     }
 
     return transformed_arr;
 }
 
 void *
-transform_const_range( const const_range_t r, transform_func f ) {
-    printf( "transform_const_range\n" );
-
+transform_const_range( const const_range_t r, transform_func f,
+                       const size_t new_element_size ) {
     const size_t n = RANGE_SIZE( r );
-    void *       transformed_arr = malloc( r.element_size * n );
+    void *       transformed_arr = malloc( new_element_size * n );
     if ( !transformed_arr ) {
         perror( "malloc" );
         exit( -1 );
     }
 
-    const void * r_ptr = r.cbegin;
+    const void * rl_ptr = FRONT( r );
+    const void * rr_ptr = BACK( r );
     void *       t_ptr = transformed_arr;
 
-    while ( r_ptr != r.cend ) {
-        f( &r_ptr, &t_ptr );
-        INCR( r, r_ptr );
-        INCR( r, t_ptr );
+    while ( rl_ptr != rr_ptr ) {
+        f( &rl_ptr, &t_ptr );
+        rl_ptr = ( void * ) ( ( uintptr_t ) rl_ptr + r.element_size );
+        t_ptr = ( void * ) ( ( uintptr_t ) t_ptr + new_element_size );
     }
 
     return transformed_arr;
-}
-
-void *
-transform_arr( const void * const arr, const size_t n,
-               const size_t element_size, transform_func f ) {
-    void * transformed_arr = malloc( n * element_size );
-    if ( !transformed_arr ) {
-        perror( "malloc" );
-        exit( -1 );
-    }
-
-    const_range_t range = get_const_range( arr, n, element_size );
-
-    return transform_const_range( range, f );
 }
 
 tr_range_t
-transform_tr_range( tr_range_t tr, transform_func f ) {
-    if ( tr.n_transforms == tr.capacity ) {
-        tr.transforms = ( transform_func * ) realloc(
-            ( void * ) tr.transforms,
-            2 * ( tr.capacity * sizeof( transform_func ) ) );
-        tr.capacity = 2 * tr.capacity;
+transform_arr( void * const arr, const size_t n, const size_t element_size,
+               transform_func f, const size_t new_element_size ) {
+    tr_range_t range = get_tr_range( arr, n, element_size );
+
+    return transform_tr_range( range, f, new_element_size );
+}
+
+tr_range_t
+transform_tr_range( tr_range_t tr, transform_func f,
+                    const size_t new_element_size ) {
+    void * new_arr = malloc( new_element_size * RANGE_SIZE( tr ) );
+
+    const void * rl_ptr = FRONT( tr );
+    const void * rr_ptr = BACK( tr );
+    void *       t_ptr = new_arr;
+
+    while ( rl_ptr != rr_ptr ) {
+        f( &rl_ptr, &t_ptr );
+        rl_ptr = ( void * ) ( ( uintptr_t ) rl_ptr + tr.element_size );
+        t_ptr = ( void * ) ( ( uintptr_t ) t_ptr + new_element_size );
     }
 
-    tr.transforms[tr.n_transforms] = f;
-    tr.n_transforms++;
-
-    return tr;
+    return get_tr_range( new_arr, RANGE_SIZE( tr ), new_element_size );
 }
 
