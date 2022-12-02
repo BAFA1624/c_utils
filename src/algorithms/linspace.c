@@ -124,4 +124,3 @@ linspace_cllf( complex_llf start, const complex_llf end, const size_t n,
 
     return arr;
 }
-
