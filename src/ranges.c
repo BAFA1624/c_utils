@@ -1,94 +1,106 @@
 #include "ranges.h"
 
+struct RANGE_T
+{
+    void * begin;
+    void * end;
+    size_t element_size;
+};
+
+
+bool
+is_forward_range( const range_t r ) {
+    return ( uintptr_t ) r->begin < ( uintptr_t ) r->end;
+}
+
+size_t
+range_size( const range_t r ) {
+    return ( size_t ) ( is_forward_range( r ) ?
+                            ( uintptr_t ) r->end - ( uintptr_t ) r->begin :
+                            ( uintptr_t ) r->begin - ( uintptr_t ) r->end );
+}
+
+void *
+front( const range_t r ) {
+    return is_forward_range( r ) ?
+               r->begin :
+               ( void * ) ( ( uintptr_t ) r->end + r->element_size );
+}
+void *
+back( const range_t r ) {
+    return is_forward_range( r ) ?
+               r->end :
+               ( void * ) ( ( uintptr_t ) r->begin + r->element_size );
+}
+
+void *
+incr( const range_t r, const void * const ptr ) {
+    return ( void * ) ( is_forward_range( r ) ?
+                            ( uintptr_t ) ptr + r->element_size :
+                            ( uintptr_t ) ptr - r->element_size );
+}
+void *
+decr( const range_t r, const void * const ptr ) {
+    return ( void * ) ( is_forward_range( r ) ?
+                            ( uintptr_t ) ptr - r->element_size :
+                            ( uintptr_t ) ptr + r->element_size );
+}
+
+void *
+incr_n( const range_t r, const void * const ptr, const size_t n ) {
+    return ( void * ) ( is_forward_range( r ) ?
+                            ( uintptr_t ) ptr + n * r->element_size :
+                            ( uintptr_t ) ptr - n * r->element_size );
+}
+void *
+decr_n( const range_t r, const void * const ptr, const size_t n ) {
+    return ( void * ) ( is_forward_range( r ) ?
+                            ( uintptr_t ) ptr - n * r->element_size :
+                            ( uintptr_t ) ptr + n * r->element_size );
+}
+
 range_t
-get_range( void * const arr, const size_t size, const size_t element_size ) {
-    const range_t range = {
-        .begin = arr,
-        .end = ( void * const ) ( ( uintptr_t ) arr + size * element_size ),
-        .cbegin = ( const void * const ) arr,
-        .cend = ( const void * const ) ( ( const uintptr_t ) arr
-                                         + size * element_size ),
-        .element_size = element_size,
-    };
-    return range;
+range_create( void * arr, const size_t size, const size_t element_size,
+              const bool forward ) {
+    range_t r = ( range_t ) malloc( sizeof( struct RANGE_T ) );
+    if ( !r ) {
+        perror( "malloc" );
+        exit( -1 );
+    }
+
+    r->begin =
+        forward ?
+            arr :
+            ( void * ) ( ( uintptr_t ) arr + ( size - 1 ) * element_size );
+    r->end = ( void * ) ( forward ? ( uintptr_t ) arr + size * element_size :
+                                    ( uintptr_t ) arr - element_size );
+    r->element_size = element_size;
+
+    return r;
 }
 
-const_range_t
-get_const_range( const void * const arr, const size_t size,
-                 const size_t element_size ) {
-    const const_range_t range = {
-        .cbegin = arr,
-        .cend = ( const void * const ) ( ( const uintptr_t ) arr
-                                         + size * element_size ),
-        .element_size = element_size,
-    };
-    return range;
-}
-
-rrange_t
-get_rrange( void * const arr, const size_t size, const size_t element_size ) {
-    const rrange_t range = {
-        .begin = ( void * const ) ( ( uintptr_t ) arr
-                                    + ( size - 1 ) * element_size ),
-        .end = ( void * const ) ( ( uintptr_t ) arr - element_size ),
-        .cbegin = ( const void * const ) ( ( const uintptr_t ) arr
-                                           + ( size - 1 ) * element_size ),
-        .cend = ( const void * const ) ( ( uintptr_t ) arr - element_size ),
-        .element_size = element_size,
-    };
-    return range;
-}
-
-const_rrange_t
-get_const_rrange( const void * const arr, const size_t size,
-                  const size_t element_size ) {
-    const const_rrange_t range = {
-        .cbegin = ( const void * const ) ( ( uintptr_t ) arr
-                                           + ( size - 1 ) * element_size ),
-        .cend = ( const void * const ) ( ( uintptr_t ) arr - element_size ),
-        .element_size = element_size,
-    };
-    return range;
-}
-
-
-void *
-at_range( range_t * r_ptr, const size_t i ) {
-    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
-                               ( const uintptr_t ) r_ptr->cbegin :
-                               ( const uintptr_t ) r_ptr->cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
-                                ( const uintptr_t ) r_ptr->cend :
-                                ( const uintptr_t ) r_ptr->cbegin;
-    assert( left + i < right );
-
-    return INCR_N( ( *r_ptr ), ( *r_ptr ).cbegin, i );
+void
+range_destroy( range_t r ) {
+    free( r );
 }
 
 void *
-const_at_range( const range_t * r_ptr, const size_t i ) {
-    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
-                               ( const uintptr_t ) r_ptr->cbegin :
-                               ( const uintptr_t ) r_ptr->cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
-                                ( const uintptr_t ) r_ptr->cend :
-                                ( const uintptr_t ) r_ptr->cbegin;
-    assert( left + i < right );
-
-    return INCR_N( ( *r_ptr ), r_ptr->cbegin, i );
+at( range_t r, const size_t i ) {
+    const size_t n = range_size( r );
+    return incr_n( r, front( r ), i % ( n + 1 ) );
+}
+void *
+access( range_t r, const size_t i ) {
+    return incr_n( r, front( r ), i );
 }
 
-void *
-at_const_range( const const_range_t * r_ptr, const size_t i ) {
-    // Bounds check
-    const uintptr_t left = CHECK_FORWARD_ITER( r_ptr ) ?
-                               ( const uintptr_t ) r_ptr->cbegin :
-                               ( const uintptr_t ) r_ptr->cend;
-    const uintptr_t right = CHECK_FORWARD_ITER( r_ptr ) ?
-                                ( const uintptr_t ) r_ptr->cend :
-                                ( const uintptr_t ) r_ptr->cbegin;
-    assert( left + i < right );
+range_t
+range_realloc( range_t r, const size_t new_element_size,
+               const size_t n_elements ) {
+    const bool forward = is_forward_range( r );
 
-    return INCR_N( ( *r_ptr ), r_ptr->cbegin, i );
+    if ( new_element_size != r->element_size ) {}
+
+    return r;
 }
 
