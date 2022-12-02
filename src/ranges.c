@@ -15,48 +15,48 @@ is_forward_range( const range_t r ) {
 
 size_t
 range_size( const range_t r ) {
-    return ( size_t ) ( is_forward_range( r ) ?
-                            ( uintptr_t ) r->end - ( uintptr_t ) r->begin :
-                            ( uintptr_t ) r->begin - ( uintptr_t ) r->end );
+    return ( size_t ) ( is_forward_range( r )
+                            ? ( uintptr_t ) r->end - ( uintptr_t ) r->begin
+                            : ( uintptr_t ) r->begin - ( uintptr_t ) r->end );
 }
 
 void *
 front( const range_t r ) {
-    return is_forward_range( r ) ?
-               r->begin :
-               ( void * ) ( ( uintptr_t ) r->end + r->element_size );
+    return is_forward_range( r )
+               ? r->begin
+               : ( void * ) ( ( uintptr_t ) r->end + r->element_size );
 }
 void *
 back( const range_t r ) {
-    return is_forward_range( r ) ?
-               r->end :
-               ( void * ) ( ( uintptr_t ) r->begin + r->element_size );
+    return is_forward_range( r )
+               ? r->end
+               : ( void * ) ( ( uintptr_t ) r->begin + r->element_size );
 }
 
 void *
 incr( const range_t r, const void * const ptr ) {
-    return ( void * ) ( is_forward_range( r ) ?
-                            ( uintptr_t ) ptr + r->element_size :
-                            ( uintptr_t ) ptr - r->element_size );
+    return ( void * ) ( is_forward_range( r )
+                            ? ( uintptr_t ) ptr + r->element_size
+                            : ( uintptr_t ) ptr - r->element_size );
 }
 void *
 decr( const range_t r, const void * const ptr ) {
-    return ( void * ) ( is_forward_range( r ) ?
-                            ( uintptr_t ) ptr - r->element_size :
-                            ( uintptr_t ) ptr + r->element_size );
+    return ( void * ) ( is_forward_range( r )
+                            ? ( uintptr_t ) ptr - r->element_size
+                            : ( uintptr_t ) ptr + r->element_size );
 }
 
 void *
 incr_n( const range_t r, const void * const ptr, const size_t n ) {
-    return ( void * ) ( is_forward_range( r ) ?
-                            ( uintptr_t ) ptr + n * r->element_size :
-                            ( uintptr_t ) ptr - n * r->element_size );
+    return ( void * ) ( is_forward_range( r )
+                            ? ( uintptr_t ) ptr + n * r->element_size
+                            : ( uintptr_t ) ptr - n * r->element_size );
 }
 void *
 decr_n( const range_t r, const void * const ptr, const size_t n ) {
-    return ( void * ) ( is_forward_range( r ) ?
-                            ( uintptr_t ) ptr - n * r->element_size :
-                            ( uintptr_t ) ptr + n * r->element_size );
+    return ( void * ) ( is_forward_range( r )
+                            ? ( uintptr_t ) ptr - n * r->element_size
+                            : ( uintptr_t ) ptr + n * r->element_size );
 }
 
 range_t
@@ -69,11 +69,11 @@ range_create( void * arr, const size_t size, const size_t element_size,
     }
 
     r->begin =
-        forward ?
-            arr :
-            ( void * ) ( ( uintptr_t ) arr + ( size - 1 ) * element_size );
-    r->end = ( void * ) ( forward ? ( uintptr_t ) arr + size * element_size :
-                                    ( uintptr_t ) arr - element_size );
+        forward
+            ? arr
+            : ( void * ) ( ( uintptr_t ) arr + ( size - 1 ) * element_size );
+    r->end = ( void * ) ( forward ? ( uintptr_t ) arr + size * element_size
+                                  : ( uintptr_t ) arr - element_size );
     r->element_size = element_size;
 
     return r;
@@ -94,13 +94,32 @@ access( range_t r, const size_t i ) {
     return incr_n( r, front( r ), i );
 }
 
-range_t
+/*range_t
 range_realloc( range_t r, const size_t new_element_size,
                const size_t n_elements ) {
-    const bool forward = is_forward_range( r );
+    const bool forward     = is_forward_range( r );
+    const void * const end = r->end;
 
-    if ( new_element_size != r->element_size ) {}
+    if ( new_element_size != r->element_size ) {
+        void * arr = realloc( access( r, 0 ), new_element_size * n_elements );
+        r->begin   = forward
+                         ? arr
+                         : ( void * ) ( ( uintptr_t ) arr
+                                      + ( n_elements - 1 ) * new_element_size );
+        r->end     = ( void * ) ( forward ? ( uintptr_t ) arr
+                                            + new_element_size * n_elements
+                                          : ( uintptr_t ) arr - new_element_size
+);
+    }
+
+    void * ptr = front( r );
+    do {
+
+
+        ptr += r->element_size;
+    } while ( ptr != end );
+
+    r->element_size = new_element_size;
 
     return r;
-}
-
+}*/
