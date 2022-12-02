@@ -9,13 +9,12 @@
 #include <string.h>
 
 
-struct ARGS_
-{
-    const size_t n;
-    const void ** args;
-};
+typedef struct ARGS_ * args;
 
 
-typedef struct ARGS_ args;
+args
+args_create( const size_t n, const size_t * args_sizes, T * args );
+void
+args_destroy( args a );
 
 #endif
