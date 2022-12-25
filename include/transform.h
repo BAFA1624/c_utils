@@ -12,9 +12,13 @@
 typedef struct ARGS_ * args;
 
 
-args
-args_create( const size_t n, const size_t * args_sizes, T * args );
-void
-args_destroy( args a );
+args args_create( const size_t * args_sizes, const size_t n, ... );
+void args_destroy( args a );
+
+void ** args_at( args a, const size_t i, size_t * sz );
+
+// range_t transform( const range_t r );
+
+bool args_verify( const args a, size_t n, ... );
 
 #endif
