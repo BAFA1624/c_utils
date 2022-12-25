@@ -8,39 +8,31 @@
 #include <stdlib.h>
 
 typedef struct RANGE_T * range_t;
-typedef range_t rrange_t;
+typedef range_t          rrange_t;
 
 typedef void * ( *range_access )( range_t, const size_t );
 typedef void * ( *range_const_access )( const range_t, const size_t );
 
 
-bool
-is_forward_range( const range_t r );
+bool is_forward_range( const range_t r );
 
-size_t
-range_size( const range_t r );
+size_t range_size( const range_t r );
 
-void *
-front( const range_t r );
-void *
-back( const range_t r );
+void * front( const range_t r );
+void * back( const range_t r );
 
 
-range_t
-range_create( void * arr, const size_t size, const size_t element_size,
-              const bool forward );
+range_t range_create( void * arr, const size_t size, const size_t element_size,
+                      const bool forward );
 
 
-void
-range_destroy( range_t r );
+void range_destroy( range_t r );
 
 
 // Checked access to range
-void *
-at( range_t r, const size_t i );
+void * at( range_t r, const size_t i );
 // Unchecked access to underlying array
-void *
-access( range_t r, const size_t i );
+void * access( range_t r, const size_t i );
 
 
 // May not be necessary
