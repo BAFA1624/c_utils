@@ -2,6 +2,7 @@
 #include "common_math.h"
 #include "io.h"
 #include "ranges.h"
+#include "str.h"
 
 #include <assert.h>
 
@@ -34,6 +35,15 @@ print( const void ** f, void ** dst ) {
 
 int
 main() {
+    const char * test_str = "Test test test tEst test";
+    const size_t test_str_len = len_cstr( test_str );
+    const char * delim = "test";
+    const size_t delim_len = len_cstr( delim );
+    const size_t n_t = find_cstr( test_str, test_str_len, delim, delim_len );
+
+    printf( "%lu occurences of %s found in:\n%s\n", n_t, delim, test_str );
+
+    /*
     size_t n = 5;
 
     float * test_f = linspace_f( -5.5, 5.5, n, true );
@@ -62,16 +72,17 @@ main() {
 
     size_t sizes[] = { sizeof( a1 ), sizeof( a2 ), sizeof( a3 ) };
     args   a =
-        args_create( sizes, 3, ( void * ) &a1, ( void * ) &a2, ( void * ) &a3 );
+        args_create( sizes, 3, ( void * ) &a1, ( void * ) &a2, ( void * )
+    &a3 );
 
     printf( "args_verify: %s\n", args_verify( a, 3, ( void * ) &a1,
-                                              ( void * ) &a2, ( void * ) &a3 ) ?
-                                     "true" :
-                                     "false" );
+                                              ( void * ) &a2, ( void * ) &a3
+    ) ? "true" : "false" );
 
     args_destroy( a );
     range_destroy( range );
     free( test_f );
+    */
 
     return 0;
 }
