@@ -24,8 +24,8 @@ comp_cstr( const char * const lhs, const char * const rhs ) {
 }
 
 size_t
-find_cstr( const char * const buf, const size_t buf_sz,
-           const char * const target, const size_t target_sz ) {
+count_cstr( const char * const buf, const size_t buf_sz,
+            const char * const target, const size_t target_sz ) {
     if ( buf == NULL || target == NULL )
         return 0;
     if ( buf_sz == 0 || target_sz == 0 )

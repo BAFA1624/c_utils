@@ -6,8 +6,8 @@
 size_t len_cstr( const char * const restrict s );
 
 // Returns a count of the target string found in the provided buffer.
-size_t find_cstr( const char * const buf, const size_t buf_sz,
-                  const char * const target, const size_t target_sz );
+size_t count_cstr( const char * const buf, const size_t buf_sz,
+                   const char * const target, const size_t target_sz );
 
 // Returns the index positions of the target string found in the provided
 // buffer.
