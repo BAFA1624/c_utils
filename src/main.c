@@ -35,13 +35,15 @@ print( const void ** f, void ** dst ) {
 
 int
 main() {
-    const char * test_str = "Test test test tEst test";
+    const char * test_str = "asdlfkjatestlasdfkjdsf";
     const size_t test_str_len = len_cstr( test_str );
+    printf( "Length of %s, %lu\n", test_str, test_str_len );
     const char * delim = "test";
     const size_t delim_len = len_cstr( delim );
-    const size_t n_t = find_cstr( test_str, test_str_len, delim, delim_len );
+    const size_t n_t =
+        find_first_cstr( test_str, test_str_len, delim, delim_len );
 
-    printf( "%lu occurences of %s found in:\n%s\n", n_t, delim, test_str );
+    printf( "%s found at position %lu in %s\n", delim, n_t, test_str );
 
     /*
     size_t n = 5;
