@@ -56,6 +56,33 @@ count_cstr( const char * const buf, const size_t buf_sz,
     return n;
 }
 
+size_t
+find_first_cstr( const char * const buf, const size_t buf_sz,
+                 const char * const target, const size_t target_sz ) {
+    if ( buf == NULL || target == NULL )
+        return buf_sz;
+    if ( buf_sz == 0 || target_sz == 0 )
+        return buf_sz;
+
+    size_t pos = 0;
+    while ( buf[pos] != '\0' ) {
+    search:
+        if ( buf[pos] == target[0] ) {
+            size_t search_pos = 1;
+            while ( search_pos < target_sz ) {
+                if ( buf[pos + search_pos] != target[search_pos] )
+                    goto search;
+                search_pos++;
+            }
+            return pos;
+        }
+        pos++;
+    }
+
+    return buf_sz;
+}
+
+
 /*char **
 split_cstr( const char * const buf, const size_t sz, const char * delim ) {
     const char *l = buf, *r = buf + sz - 1;
