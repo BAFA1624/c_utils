@@ -1,7 +1,5 @@
 #include "str.h"
 
-#include <stdio.h>
-
 size_t
 len_cstr( const char * restrict s ) {
     const uintptr_t start = ( uintptr_t ) s;
@@ -150,7 +148,7 @@ find_pos_cstr( const char * const buf, const size_t buf_sz,
     return result;
 }
 
-/*char **
+char **
 split_cstr( const char * const buf, const size_t buf_sz,
             const char * const target, const size_t target_sz, size_t * n ) {
     if ( buf == NULL || target == NULL ) {
@@ -161,5 +159,52 @@ split_cstr( const char * const buf, const size_t buf_sz,
         *n = 0;
         return NULL;
     }
+
+    size_t * positions = find_pos_cstr( buf, buf_sz, target, target_sz, n );
+    if ( !positions ) {
+        *n = 0;
+        return NULL;
+    }
+
+    char ** result = ( char ** ) malloc( ( *n + 1 ) * sizeof( char * ) );
+    if ( !result ) {
+        perror( "malloc" );
+        exit( EXIT_FAILURE );
+    }
+
+    if ( *n == 0 ) {
+        free( positions );
+        return NULL;
+    }
+
+    result[0] = ( char * ) malloc( positions[0] );
+    if ( !result[0] ) {
+        perror( "malloc" );
+        exit( EXIT_FAILURE );
+    }
+    memcpy( ( void * ) result[0], buf, positions[0] - 1 );
+
+    for ( size_t i = 1; i < *n + 1; ++i ) {
+        size_t l = 0, r = 0;
+        if ( i == 0 ) {
+            l = 0;
+            r = positions[0];
+        }
+
+        l = positions[i];
+        r = positions[i + 1];
+
+        result[i + 1] = ( char * ) malloc( r - l );
+        if ( !result[i] ) {
+            perror( "malloc" );
+            exit( EXIT_FAILURE );
+        }
+
+        memcpy( result[i + 1] );
+    }
+
+    free( positions );
+
+    return result;
 }
-*/
+
