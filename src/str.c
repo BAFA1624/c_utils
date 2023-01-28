@@ -82,6 +82,73 @@ find_first_cstr( const char * const buf, const size_t buf_sz,
     return buf_sz;
 }
 
+size_t *
+find_pos_cstr( const char * const buf, const size_t buf_sz,
+               const char * const target, const size_t target_sz, size_t * n ) {
+    if ( buf == NULL || target == NULL ) {
+        *n = 0;
+        return NULL;
+    }
+    if ( buf_sz == 0 || target_sz == 0 ) {
+        *n = 0;
+        return NULL;
+    }
+
+    // Result storage
+    size_t   result_sz = 0;
+    size_t   result_cap = 10;
+    size_t * result = malloc( result_cap * sizeof( size_t ) );
+    if ( !result ) {
+        perror( "malloc" );
+        exit( EXIT_FAILURE );
+    }
+
+    // Check through buffer to find all occurences of target.
+    const char * buf_ptr = buf;
+    while ( ( size_t ) ( ( uintptr_t ) buf_ptr - ( uintptr_t ) buf )
+            != buf_sz ) {
+    search:
+        if ( *buf_ptr == target[0] ) {
+            size_t forward_check = 1;
+            while ( forward_check < target_sz ) {
+                if ( buf_ptr[forward_check] != target[forward_check] )
+                    goto search; // target not found.
+                forward_check++;
+            }
+
+            // Target found!
+            // If not enough capacity, realloc.
+            if ( result_sz == result_cap ) {
+                result_cap *= ( size_t ) 2;
+                result = ( size_t * ) realloc( ( void * ) result,
+                                               result_cap * sizeof( size_t ) );
+                if ( !result ) {
+                    perror( "realloc" );
+                    exit( EXIT_FAILURE );
+                }
+            }
+
+            // Save position.
+            result[result_sz++] =
+                ( size_t ) ( ( uintptr_t ) buf_ptr - ( uintptr_t ) buf );
+            buf_ptr = ( char * ) ( ( uintptr_t ) buf_ptr + target_sz - 1 );
+        }
+
+        buf_ptr++;
+    }
+
+    if ( result_sz != result_cap ) {
+        result = ( size_t * ) realloc( ( void * ) result,
+                                       result_sz * sizeof( size_t ) );
+        if ( !result ) {
+            perror( "realloc" );
+            exit( EXIT_FAILURE );
+        }
+    }
+
+    *n = result_sz;
+    return result;
+}
 
 /*char **
 split_cstr( const char * const buf, const size_t sz, const char * delim ) {
