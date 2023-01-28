@@ -12,7 +12,7 @@ size_t len_cstr( const char * const restrict s );
 size_t count_cstr( const char * const buf, const size_t buf_sz,
                    const char * const target, const size_t target_sz );
 
-// TODO
+// Implemented.
 // Returns the index positions of the target string found in the provided
 // buffer.
 size_t * find_pos_cstr( const char * const buf, const size_t buf_sz,
