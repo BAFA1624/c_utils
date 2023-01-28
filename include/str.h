@@ -37,7 +37,7 @@ int comp_cstr( const char * const lhs, const char * const rhs );
 // TODO
 // Returns array substrings of buf after being split using delimiter "delim"
 // Sets value of "n" to size of resulting array.
-char ** split_cstr( const char * buf, const size_t buf_sz, const char * delim,
-                    size_t * n );
+char ** split_cstr( const char * const buf, const size_t buf_sz,
+                    const char * target, const size_t target_sz, size_t * n );
 
 #endif

@@ -28,7 +28,7 @@ count_cstr( const char * const buf, const size_t buf_sz,
             const char * const target, const size_t target_sz ) {
     if ( buf == NULL || target == NULL )
         return 0;
-    if ( buf_sz == 0 || target_sz == 0 )
+    if ( buf_sz == 0 || target_sz == 0 || target_sz > buf_sz )
         return 0;
 
     const char *l = buf, *r = l;
@@ -61,7 +61,7 @@ find_first_cstr( const char * const buf, const size_t buf_sz,
                  const char * const target, const size_t target_sz ) {
     if ( buf == NULL || target == NULL )
         return buf_sz;
-    if ( buf_sz == 0 || target_sz == 0 )
+    if ( buf_sz == 0 || target_sz == 0 || target_sz > buf_sz )
         return buf_sz;
 
     size_t pos = 0;
@@ -89,7 +89,7 @@ find_pos_cstr( const char * const buf, const size_t buf_sz,
         *n = 0;
         return NULL;
     }
-    if ( buf_sz == 0 || target_sz == 0 ) {
+    if ( buf_sz == 0 || target_sz == 0 || target_sz > buf_sz ) {
         *n = 0;
         return NULL;
     }
@@ -151,16 +151,15 @@ find_pos_cstr( const char * const buf, const size_t buf_sz,
 }
 
 /*char **
-split_cstr( const char * const buf, const size_t sz, const char * delim ) {
-    const char *l = buf, *r = buf + sz - 1;
-
-    const size_t delim_len = len_cstr( delim );
-
-    // Count no. times delim appears in buf.
-    size_t n = 0;
-    do {
-    } while ( !l );
-
-    return NULL;
-}*/
-
+split_cstr( const char * const buf, const size_t buf_sz,
+            const char * const target, const size_t target_sz, size_t * n ) {
+    if ( buf == NULL || target == NULL ) {
+        *n = 0;
+        return NULL;
+    }
+    if ( buf_sz == 0 || target_sz == 0 || target_sz > buf_sz ) {
+        *n = 0;
+        return NULL;
+    }
+}
+*/
