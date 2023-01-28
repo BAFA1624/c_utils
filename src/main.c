@@ -35,7 +35,7 @@ print( const void ** f, void ** dst ) {
 
 int
 main() {
-    const char * test_str = "asdlfkjatestlasdfkjdsf";
+    const char * test_str = "asdlfkjatestlasdfktesttestjdsftest";
     const size_t test_str_len = len_cstr( test_str );
     printf( "Length of %s, %lu\n", test_str, test_str_len );
     const char * delim = "test";
@@ -43,7 +43,15 @@ main() {
     const size_t n_t =
         find_first_cstr( test_str, test_str_len, delim, delim_len );
 
-    printf( "%s found at position %lu in %s\n", delim, n_t, test_str );
+    printf( "First %s found at position %lu in %s\n", delim, n_t, test_str );
+
+    size_t   n;
+    size_t * positions =
+        find_pos_cstr( test_str, test_str_len, delim, delim_len, &n );
+    printf( "%s found at positions:\n", delim );
+    for ( size_t i = 0; i < n; ++i )
+        printf( "%lu: %lu\n", i + 1, positions[i] );
+    free( ( void * ) positions );
 
     /*
     size_t n = 5;
