@@ -30,14 +30,15 @@ size_t find_first_cstr( const char * const buf, const size_t buf_sz,
 
 // TODO
 // Returns the number of occurrences of target replaced.
-size_t replace_cstr( char * const buf, const char * const target,
-                     const char * const replacement );
+char * replace_cstr( char * buf, const size_t buf_sz, const char * const target,
+                     const size_t target_sz, const char * const replacement,
+                     const size_t replacement_sz, size_t * n );
 
 // Implemented.
 // Returns 1 if two cstrings are equal, 0 if not.
 int comp_cstr( const char * const lhs, const char * const rhs );
 
-// TODO
+// Implemented.
 // Returns array substrings of buf after being split using delimiter "delim"
 // Sets value of "n" to size of resulting array.
 char ** split_cstr( const char * const buf, const size_t buf_sz,

@@ -251,3 +251,37 @@ split_cstr( const char * const buf, const size_t buf_sz,
     return result;
 }
 
+char *
+replace_cstr( char * buf, const size_t buf_sz, const char * const target,
+              const size_t target_sz, const char * const replacement,
+              const size_t replacement_sz, size_t * n ) {
+    if ( buf == NULL || target == NULL )
+        return 0;
+    if ( buf_sz == 0 || target_sz == 0 )
+        return 0;
+
+    char ** substrings = split_cstr( buf, buf_sz, target, target_sz, n );
+    if ( *n == 0 ) {
+        free( substrings );
+        return buf;
+    }
+
+    const size_t final_sz = ( size_t ) ( ( long long ) buf_sz
+                                         - ( ( long long ) target_sz
+                                             - ( long long ) replacement_sz ) );
+
+    char * result = ( char * ) malloc( final_sz );
+    if ( !result ) {
+        perror( "malloc" );
+        exit( EXIT_FAILURE );
+    }
+
+    if ( target_sz >= replacement_sz ) {}
+    else {}
+
+    for ( size_t i = 0; i < *n; ++i ) free( substrings[i] );
+    free( substrings );
+
+    return result;
+}
+
