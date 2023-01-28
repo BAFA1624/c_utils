@@ -160,12 +160,15 @@ split_cstr( const char * const buf, const size_t buf_sz,
         return NULL;
     }
 
+    // Get positions of delimiters in buf.
     size_t * positions = find_pos_cstr( buf, buf_sz, target, target_sz, n );
     if ( !positions ) {
         *n = 0;
         return NULL;
     }
 
+    // find_pos_cstr sets *n to number of delimiters.
+    // Therefore, number of substrings = *n + 1;
     char ** result = ( char ** ) malloc( ( *n + 1 ) * sizeof( char * ) );
     if ( !result ) {
         perror( "malloc" );
@@ -177,30 +180,70 @@ split_cstr( const char * const buf, const size_t buf_sz,
         return NULL;
     }
 
-    result[0] = ( char * ) malloc( positions[0] );
-    if ( !result[0] ) {
-        perror( "malloc" );
-        exit( EXIT_FAILURE );
-    }
-    memcpy( ( void * ) result[0], buf, positions[0] - 1 );
-
-    for ( size_t i = 1; i < *n + 1; ++i ) {
-        size_t l = 0, r = 0;
-        if ( i == 0 ) {
-            l = 0;
-            r = positions[0];
+    // Counter for substrings w/ sz = 0, therefore need to skip.
+    // result_count keeps track of which result index to store into.
+    size_t result_count = 0;
+    // Handle first substring manually.
+    // Sizeof first substring = index of first delimiter + '\0'.
+    if ( positions[0] != 0 ) {
+        result[result_count] = ( char * ) malloc( positions[0] + 1 );
+        if ( !result[result_count] ) {
+            perror( "malloc" );
+            exit( EXIT_FAILURE );
         }
+        copy( ( void * ) result[result_count], buf, positions[0] + 1,
+              positions[0] );
+        result[result_count][positions[0]] = '\0';
+        result_count++;
+    }
 
-        l = positions[i];
+    // Handle remaining substrings.
+    size_t l = 0, r = 0;
+    for ( size_t i = 0; i < *n - 1; ++i ) {
+        // Represent start & finish of each substring.
+        l = positions[i] + target_sz;
         r = positions[i + 1];
+        if ( r - l == 0 )
+            continue;
 
-        result[i + 1] = ( char * ) malloc( r - l );
-        if ( !result[i] ) {
+        // Length is r - l + '\0'.
+        result[result_count] = ( char * ) malloc( r - l + 1 );
+        if ( !result[result_count] ) {
+            perror( "malloc" );
+            exit( EXIT_FAILURE );
+        }
+        copy( ( void * ) result[result_count],
+              ( void * ) ( ( uintptr_t ) buf + l ), r - l + 1, r - l );
+        result[result_count][r - l] = '\0';
+        result_count++;
+    }
+
+    // Handle final substring.
+    if ( positions[*n - 1] != buf_sz - target_sz ) {
+        result[result_count] =
+            ( char * ) malloc( buf_sz - positions[*n - 1] + target_sz + 1 );
+        if ( !result[result_count] ) {
             perror( "malloc" );
             exit( EXIT_FAILURE );
         }
 
-        memcpy( result[i + 1] );
+        copy( ( void * ) result[result_count],
+              ( void * ) ( ( uintptr_t ) buf + positions[*n - 1] + target_sz ),
+              buf_sz - positions[*n - 1] + target_sz + 1,
+              buf_sz - positions[*n - 1] + target_sz );
+
+        result[result_count][buf_sz - positions[*n - 1] + target_sz] = '\0';
+
+        result_count++;
+    }
+
+    // Remove space allocated for any sz zero strings.
+    *n = result_count;
+    result = ( char ** ) realloc( ( void * ) result,
+                                  result_count * sizeof( char * ) );
+    if ( !result ) {
+        perror( "realloc" );
+        exit( EXIT_FAILURE );
     }
 
     free( positions );
