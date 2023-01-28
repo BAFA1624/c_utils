@@ -1,6 +1,7 @@
 #include "algorithm.h"
 #include "common_math.h"
 #include "io.h"
+#include "memory.h"
 #include "ranges.h"
 #include "str.h"
 
@@ -35,7 +36,7 @@ print( const void ** f, void ** dst ) {
 
 int
 main() {
-    const char * test_str = "asdlfkjatestlasdfktesttestjdsftest";
+    const char * test_str = "asdlfkjatestlasdfktest soa testjdsftest";
     const size_t test_str_len = len_cstr( test_str );
     printf( "Length of %s, %lu\n", test_str, test_str_len );
     const char * delim = "test";
@@ -52,6 +53,17 @@ main() {
     for ( size_t i = 0; i < n; ++i )
         printf( "%lu: %lu\n", i + 1, positions[i] );
     free( ( void * ) positions );
+
+    printf( "Splitting string: |%s| on |%s|\n", test_str, delim );
+    char ** substrings =
+        split_cstr( test_str, test_str_len, delim, delim_len, &n );
+
+    printf( "%lu substrings found:\n", n );
+    printf( "Substrings:\n" );
+    for ( size_t i = 0; i < n; ++i ) printf( "\t- |%s|\n", substrings[i] );
+
+    for ( size_t i = 0; i < n; ++i ) free( substrings[i] );
+    free( substrings );
 
     /*
     size_t n = 5;
